@@ -8,11 +8,13 @@
 namespace AbstractClassVsInterface {
 
     /* interface declaration */
-    class Interface
+    struct Interface
     {
-    public:
-        virtual void method_first() = 0;             // only 'abstract' methods
-        virtual void method_second() = 0;            // only 'abstract' methods
+    // public:
+        virtual void method_first() = 0;   // only 'abstract' methods  // pure virtual
+        virtual void method_second() = 0;  // only 'abstract' methods
+
+       // int m_member; // Disziplin: Regel: Don't do that  // No-go
     };
 
     /* abstract class declaration */
@@ -30,11 +32,20 @@ namespace AbstractClassVsInterface {
             std::cout << m_message << std::endl;
         }
 
+        void method_fifth()                 // method with implementation
+        {
+            std::cout << m_message << std::endl;
+        }
+
     private:
         std::string m_message;                       // some data
     };
 
-    /* abstract class inheriting from an interface */
+
+    /* abstract class inheriting from an interface */  // sich von einer Schnittstelle ableiten
+    
+    // Verfeinerung der Schnittstelle Interface
+    // Klasse: Daten // eine Methode realisiert // unvollstänig
     class AnotherAbstractClass : public Interface
     {
     public:
@@ -52,6 +63,7 @@ namespace AbstractClassVsInterface {
     };
 
     /* concrete class inheriting from an abstract class */
+    // interface 'Interface'
     class ConcreteClass : public AnotherAbstractClass
     {
     public:
@@ -60,8 +72,11 @@ namespace AbstractClassVsInterface {
         ConcreteClass(double value) 
             : AnotherAbstractClass{ value }, m_anotherValue{} {}
 
-        ConcreteClass(double value1, double value2)
-            : AnotherAbstractClass{ value1 }, m_anotherValue{ value2 } {}
+        ConcreteClass(double value1, double value2) 
+            : AnotherAbstractClass{ value1 }, m_anotherValue{ value2 }
+        {
+            // AnotherAbstractClass { value1 };
+        }
 
         virtual void method_second() override
         {
@@ -90,15 +105,24 @@ namespace AbstractClassVsInterface {
             method_first();
         }
 
+        void method()
+        {
+            std::cout << m_oneMoreValue << std::endl;
+        }
+
     private:
         double m_oneMoreValue;
     };
 
     // =======================================================================
 
-    Interface* getInterface()
+    // Schnittstellenzeiger als Rückgabetyp
+    // Schnittstellenzeiger als Parameter (injection)
+    Interface* getImplementationOfInterface()
     {
         AnotherConcreteClass* obj = new AnotherConcreteClass();
+
+        //obj->
         // or
         // Interface* obj = new AnotherConcreteClass();
 
@@ -110,8 +134,10 @@ namespace AbstractClassVsInterface {
     static void client()
     {
         Interface* ip;
-        ip = getInterface();
+        ip = getImplementationOfInterface();
         ip->method_first();
+
+        // ip->
     }
 }
 

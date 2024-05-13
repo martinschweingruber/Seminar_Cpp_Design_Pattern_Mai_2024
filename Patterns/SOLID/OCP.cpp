@@ -111,6 +111,7 @@ namespace SecondExampleOCP {
         std::string m_name;
         Color       m_color;
         Size        m_size;
+        double      m_weight;
     };
 
     template <typename T>
@@ -126,37 +127,46 @@ namespace AntiSecondConceptualExampleOCP {
         static Products<Product> byColor(const Products<Product>& products, Color color)
         {
             Products<Product> result{};
+
             for (const auto& product : products) {
                 if (product->m_color == color) {
                     result.push_back(product);
                 }
             }
+
             return result;
         }
 
         static Products<Product> bySize(const Products<Product>& products, Size size)
         {
             Products<Product> result{};
+
             for (const auto& product : products) {
                 if (product->m_size == size) {
                     result.push_back(product);
                 }
             }
+
             return result;
         }
 
         static Products<Product> bySizeAndColor(const Products<Product>& products, Size size, Color color)
         {
             Products<Product> result{};
+
             for (const auto& product : products) {
                 if (product->m_size == size && product->m_color == color) {
                     result.push_back(product);
                 }
             }
+
             return result;
         }
     };
 }
+
+
+// Schnittstelle // Abstraktion
 
 namespace SecondConceptualExampleOCP {
 
@@ -168,6 +178,7 @@ namespace SecondConceptualExampleOCP {
     };
 
     template <typename T>
+    
     class ColorSpecification : public ISpecification<T> 
     {
     private:
@@ -182,6 +193,7 @@ namespace SecondConceptualExampleOCP {
     };
 
     template <typename T>
+    
     class SizeSpecification : public ISpecification<T>
     {
     private:
@@ -195,6 +207,7 @@ namespace SecondConceptualExampleOCP {
         }
     };
 
+    // Abstraktion / Schnittstelle
     template <typename T>
     struct IFilter 
     {
@@ -207,16 +220,20 @@ namespace SecondConceptualExampleOCP {
         virtual Products<T> filter(const Products<T>& products, const ISpecification<T>& spec) const override
         {
             Products<T> result{};
+
             for (const auto& product : products) {
-                if (spec.isSatisfied(product))
+                if (spec.isSatisfied(product)) {
                     result.push_back(product);
+                }
             }
+
             return result;
         }
     };
 
     // combining logical specifications - with logical 'and'
     template <typename T>
+    
     class AndSpecification : public ISpecification<T>
     {
     private:
@@ -225,7 +242,8 @@ namespace SecondConceptualExampleOCP {
 
     public:
         AndSpecification(const ISpecification<T>& first, const ISpecification<T>& second)
-            : m_first{ first }, m_second{ second } {}
+            : m_first{ first }, m_second{ second }
+        {}
 
         virtual bool isSatisfied(const std::shared_ptr<Product>& product) const override {
             return m_first.isSatisfied(product) && m_second.isSatisfied(product);
@@ -234,30 +252,35 @@ namespace SecondConceptualExampleOCP {
 
     // combining logical specifications - with logical 'and' using operator notation
     template <typename T>
+    
     AndSpecification<T> operator&& (const ISpecification<T>& first, const ISpecification<T>& second) {
         return AndSpecification<T>{ first, second };
     }
 
     // combining multiple logical specifications - with variadic templates
     template <typename T>
+    
     class GenericSpecification : public ISpecification<T>
     {
     private:
         std::vector<std::shared_ptr<ISpecification<T>>> m_vec;
 
     public:
-        template <typename ... TArgs>
-        GenericSpecification(const TArgs& ... args)
+        template <typename ... TArgs>   // einpacken // Datentypen // ISpecification<T>
+        
+        GenericSpecification(const TArgs& ... args)  // einpacken: Realen Spezifikationen
         {
-           m_vec = { args ... };
+           m_vec = { args ... };  // std::initializer_list kombiniert mit auspacken // ... nachgestellt
+                                  // auspacken: Es werden die Parameter in einer komma-getrennten Liste abgelegt
         }
 
         virtual bool isSatisfied(const std::shared_ptr<T>& product) const override {
 
             bool result = std::accumulate (
+
                 std::begin(m_vec),
                 std::end(m_vec),
-                true,
+                true,  // Startwert
                 [product] (bool last, const auto& next) -> bool {
                     bool tmp = next->isSatisfied(product);
                     return last && tmp;
@@ -323,9 +346,11 @@ static void test_conceptual_example_ocp_01()
 
     ProductFilter<Product> productFilter;
 
-    ColorSpecification<Product> greenProducts {
-        ColorSpecification<Product>{ Color::Green }
-    };
+    //ColorSpecification<Product> greenProducts {
+    //    ColorSpecification<Product>{ Color::Green }
+    //};
+
+    ColorSpecification<Product> greenProducts{ Color::Green };
 
     for (const auto& product : productFilter.filter(products, greenProducts)) {
         std::cout << product->m_name << " is green" << std::endl;
@@ -364,7 +389,7 @@ static void test_conceptual_example_ocp_03()
     using namespace SecondExampleOCP;
     using namespace SecondConceptualExampleOCP;
 
-    // combined specification
+    // combined specification - constructor syntax
     AndSpecification<Product> specification {
         SizeSpecification<Product>{ Size::Small },
         ColorSpecification<Product>{ Color::Gray }
@@ -372,8 +397,7 @@ static void test_conceptual_example_ocp_03()
 
     // another combined specification - using overloaded operator &&
     AndSpecification<Product> anotherSpecification {
-        SizeSpecification<Product>{ Size::Medium } &&
-        ColorSpecification<Product>{ Color::Red }
+        SizeSpecification<Product>{ Size::Medium } && ColorSpecification<Product>{ Color::Red }
     };
 
     auto computer {
@@ -418,6 +442,12 @@ static void test_conceptual_example_ocp_04()
 
     // another combined specification
     GenericSpecification<Product> anotherSpecification {
+        std::make_shared<SizeSpecification<Product>>(Size::Medium) ,
+        std::make_shared<ColorSpecification<Product>>(Color::Red),
+        std::make_shared<SizeSpecification<Product>>(Size::Medium) ,
+        std::make_shared<ColorSpecification<Product>>(Color::Red),
+        std::make_shared<SizeSpecification<Product>>(Size::Medium) ,
+        std::make_shared<ColorSpecification<Product>>(Color::Red),
         std::make_shared<SizeSpecification<Product>>(Size::Medium) ,
         std::make_shared<ColorSpecification<Product>>(Color::Red)
     };

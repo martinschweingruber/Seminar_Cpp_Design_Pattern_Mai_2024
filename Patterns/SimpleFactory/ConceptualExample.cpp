@@ -38,7 +38,7 @@ namespace ConceptualExample {
         }
     };
 
-    class Circle : public IShape 
+    class Circle : public IShape
     {
     public:
         Circle() {}
@@ -60,6 +60,7 @@ namespace ConceptualExample {
         };
 
     public:
+                                  // integer, string, enum,  sehr simples
         std::shared_ptr<IShape> getShape(std::string shapeType)
         {
             enum class StringCode shape = stringToEnum(shapeType);

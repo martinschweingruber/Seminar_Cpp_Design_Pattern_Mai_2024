@@ -47,8 +47,10 @@ namespace ConceptualExample01 {
             {
             case 1:
                 return std::make_shared<ConcreteProduct1>();
+
             case 2:
                 return std::make_shared<ConcreteProduct2>();
+
             default:
                 std::string msg = "Invalid type: " + std::to_string(type);
                 throw std::runtime_error(msg);

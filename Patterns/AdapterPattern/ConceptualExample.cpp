@@ -13,7 +13,7 @@
 class ITarget
 {
 public:
-    virtual ~ITarget() {}
+    virtual ~ITarget() {};   // Virtueller Basisklassendestruktor 
 
     virtual std::string getRequest() const = 0;
 };
@@ -66,7 +66,10 @@ public:
 
         std::string toReverse{ m_adaptee->getSpecificRequest() };
 
-        std::reverse(std::begin(toReverse), std::end(toReverse));
+        std::reverse(
+            std::begin(toReverse),
+            std::end(toReverse)
+        );
 
         return std::string{ "Adapter: (TRANSLATED) " + toReverse };
     }
@@ -83,16 +86,15 @@ static void clientCode(std::shared_ptr<ITarget> target) {
 
 void test_conceptual_example() {
 
-    std::cout << "Client: I can work fine with the Target object" << std::endl;
-    std::shared_ptr<ITarget> target{ new Target{} };
-    clientCode(target);
+    //std::cout << "Client: I can work fine with the Target object" << std::endl;
+    //std::shared_ptr<ITarget> target{ new Target{} };
+    //clientCode(target);
 
     std::shared_ptr<Adaptee> adaptee{ new Adaptee{ } };
-    std::cout << "Client: The Adaptee class has an incompatible interface:" << std::endl;
-    std::string specificRequest = adaptee->getSpecificRequest();
-    std::cout << "Adaptee: " << specificRequest << std::endl << std::endl;
+    //std::cout << "Client: The Adaptee class has an incompatible interface:" << std::endl;
+    //std::string specificRequest = adaptee->getSpecificRequest();
+    //std::cout << "Adaptee: " << specificRequest << std::endl << std::endl;
 
-    std::cout << "Client: But I can work with the Adaptee via the Adapter:" << std::endl;
     std::shared_ptr<Adapter> adapter{ new Adapter{ adaptee } };
     clientCode(adapter);
 }

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <list>
 
 enum class Relationship { Parent, Child, Sibling };
 
@@ -16,16 +17,26 @@ struct Person
 
 namespace DependencyInversionPrinciple01
 {
+    class MyClass{};
+
+
     // low-level <<<<<<<<< -------------------
     class Relationships
     {
     public:
         std::vector<std::tuple<Person, Relationship, Person>> m_relations;
+        // MyClass m_relations;
+        // std::list<std::tuple<Person, Relationship, Person>> m_relations2;
+        //MyClass  m_relations2;
+
+        // private
+        // getter/setter:   std::vector  // Kopie
 
         void addParentAndChild(const Person& parent, const Person& child)
         {
-            m_relations.push_back({ parent, Relationship::Parent, child });
-            m_relations.push_back({ child, Relationship::Child, parent });
+            m_relations.push_back(std::tuple<Person, Relationship, Person>( parent, Relationship::Parent, child ));
+            
+            m_relations.push_back( { child, Relationship::Child, parent } );
         }
     };
 
@@ -104,7 +115,7 @@ static void test_anti_conceptual_example_dip()
     relationships.addParentAndChild(parent, child1);
     relationships.addParentAndChild(parent, child2);
 
-    FamilyTree tree{ relationships };
+    FamilyTree tree{ relationships };  // eigentlich sieht diese Zeile anders aus :)
 }
 
 static void test_conceptual_example_dip()

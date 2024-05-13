@@ -19,13 +19,22 @@
 
 namespace ConceptualExample01
 {
-    class Prototype
+    //struct ICloneable
+    //{
+    //    virtual Prototype* clone() const = 0;
+    //};
+
+
+    // Abstrakte Klasse
+    class Prototype // : public ICloneable
     {
     private:
         int m_id;
 
     public:
-        Prototype(int id) : m_id{ id } {}
+        Prototype(int id) 
+            : m_id{ id }
+        {}
 
         virtual ~Prototype() {}
         
@@ -39,13 +48,26 @@ namespace ConceptualExample01
     class ConcretePrototype : public Prototype
     {
     public:
-        ConcretePrototype(int id) : Prototype{ id } {}
+        ConcretePrototype(int id) 
+            : Prototype{ id }
+        {}
+
+       //  ConcretePrototype() : Prototype{ 0 } {}
+
+        ConcretePrototype(const ConcretePrototype& other)
+            : Prototype{ other.getId() }
+        {}
 
         // Note: Return Type = Type of base class - 
-        // but 'virtual ConcretePrototype* clone()' compiles too
+        // but 'virtual ConcretePrototype* clone()' compiles too - CoVariance
         virtual Prototype* clone() const override
         {
-            return new ConcretePrototype(*this);
+            ConcretePrototype* tmp = new ConcretePrototype(*this);
+            return tmp;
+
+            // Warum geht das:  Wegen KOVARIANZ
+
+            // return new ConcretePrototype(*this);
         }
     };
 
@@ -84,9 +106,10 @@ namespace ConceptualExample02
 
         // Note: Return Type = Type of base class - 
         // 'std::shared_ptr<ConcretePrototype> clone() const override' doesn't compile !!!
+        // NO Covariance !!!
         std::shared_ptr<Prototype> clone() const override
         {
-            std::shared_ptr<Prototype> copy {
+            std::shared_ptr<ConcretePrototype> copy {
                 std::make_shared<ConcretePrototype>(getId()) 
             };
 
@@ -99,7 +122,11 @@ void test_conceptual_example_01()
 {
     using namespace ConceptualExample01;
 
-    Prototype* prototype{ new ConcretePrototype { 123 } };
+    Prototype* prototype{ 
+        new ConcretePrototype {
+            123 
+        }
+    };
 
     clientCode(prototype);
 

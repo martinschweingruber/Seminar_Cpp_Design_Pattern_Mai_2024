@@ -38,3 +38,239 @@ Wie ziehe ich dieses Seminar durch (Tooling)
 =========================================
 
 
+ConceptualExample.cpp
+
+Sog. konzeptionelle Beispiel: Minimalistisches Beispiel / nichts: Real World
+
+=========================================
+
+
+Was ist eine abstrakte Klasse:  Unvollständige Klasse
+
+== Hat Daten
+== Hat Methoden - mit Realisierung
+
+Sie dient als Hilfestellung für konkrete / reale Klassen:
+
+Diese müssen sich von einer abstrakte Klasse ABLEITEN : Vererbung.
+
+
+=========================================
+
+C++ 11:  
+
+Uniform Initialization
+
+Brace Initialization
+
+
+Siehe hier:
+
+https://github.com/pelocpp/cpp_modern/blob/master/GeneralSnippets/BraceInitialization/BraceInitialization.md
+
+
+https://isocpp.org/blog/2016/05/quick-q-why-is-list-initialization-using-curly-braces-better-than-the-alter/
+
+=========================================
+
+In einer Neu-Entwicklung würde ich ausschließlich auf
+Smart Pointer gehen.
+
+====>  Habe ich auch alle delete's aufgerufen ?????????? 
+
+Legacy-Code: Nein.  // Don't change a running system.
+
+Vorsicht:
+
+Oberver-Pattern:
+
+std::shared_ptr  // std::weak_ptr:   Call-for-Action:  Go for std::weak_ptr (und std::shared_ptr)
+
+Wehrmutstropfen: Geht nicht immer.
+
+Auch ein GC geht nicht immer: Für Ereignisse anmelden - KEIN ABMELDEN.
+
+=====> Zyklen.
+
+=========================================
+
+Variadische Templates:
+
+====>  beliebig viele Spezifikationen mit variadischen Templates bauen.
+
+=========================================
+
+std::accumulate:
+
+Im einfachsten Fall:
+
+"Computes the sum of the given value init and the elements in the range [first, last)."
+
+Das trifft nur für den aller einfachsten Aufruf von std::accumulate zu:
+
+Kein 4. Parameter // kein Lambda
+
+
+
+{ spec1, spec2, spec3 }    // Produkt product
+
+
+std::accumulate:
+
+
+a) Ruft den Lambda auf:
+
+next ==> spec1, spec2, spec3
+
+[product] (bool last, const auto& next) -> bool { 
+                    bool tmp = spec3->isSatisfied(product);
+                    return last && tmp;
+                }
+
+std::accumulate: Ist der parallisierbar ???????  NIEMALS !!!!!!!!!!!
+
+std::reduce:
+
+Behaves like std::accumulate except the elements of the range may be grouped and rearranged in arbitrary order.
+
+
+
+std::tuple:
+
+Ist wie ein struct:
+
+
+Ein Tuple ist eine Struktur für Schreibfaule:
+
+A)
+
+typedef std::tuple<Person, Relationship, Person> Relation;
+
+using Relation = std::tuple<Person, Relationship, Person>;
+
+// Go for using
+
+
+
+std::tuple<Person, Relationship, Person> relation;
+
+Person p = std::get<0>(relation);
+
+Hmmm: Feature: "Structured Binding"
+
+const auto& [first, rel, second] = relation;
+
+if (first.m_name == "Anton") ...
+
+B)
+
+struct Relatation
+{ 
+   Person m_first;
+   Relationship m_rel;
+   Person m_second;
+};
+
+struct Relatation relation;
+
+Person p = relation.m_first;
+
+if (p.m_name == "Anton") ...
+
+if (relation.m_first.m_name == "Anton") ...
+
+==============================================
+
+Dependency Inversion Prinzip 
+
+Entkopplung 
+
+==============================================
+
+Dependency Injection Container
+
+==============================================
+
+Testing:
+
+Feature Test:  Cucumber - Cpp
+
+Google Test 
+
+Boost Test
+
+Catch
+
+==============================================
+
+Adapter:
+
+JSON   // XML  // Name-Value Pairs // Proprietäres Format
+
+
+==============================================
+
+Prototype Pattern // Virtueller Konstruktor
+
+Game Programmer:
+
+Spielebrett:  game board.
+
+Figuren:  class Figure
+
+Schach: König, Dame, Bauer, ...
+
+
+Figure* gameBoard [8][8];
+
+// nächster Zug berechnen
+
+
+Figure* copyGameBoard [8][8];   // zum Ausprobieren und Berechnen des nächsten Zugs
+
+// eine ECHTE ODER TIEFE Kopie
+
+
+// Ginge mit Schmerzen mit dem Kopieren der Zeiger ...........
+
+// Aber was ist, wenn an den Figuren Änderungen zu machen sind.
+
+
+Bemerkung:
+
+Es gibt in der Umsetzung / Realisierung einen Unterschied
+
+zwischen regulären Zeigern und Smart Pointern.
+
+// ====================================================
+
+Fabriken:
+
+== Simple Factory
+
+== Factory Method  (orderPizza)
+
+== Abstract Factory
+
+Beispiel:
+
+Logging
+
+KonsolenLogger
+FileLogger
+DatabaseLogger
+
+A) Du kennst all diese Klassen und deren Konstruktoren
+
+B) FileLogger  =====> Class MyImpl:   >> FileLogger.Log
+
+c) Wie geht es weiter, wenn ich zum DatabaseLogger wechsel .........
+
+ENTKOPPLUNG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+a) Ich kenne Grundprinzipien eines Loggers  
+
+        ==> Interface:  LogInfo, LogWarning,..
+   
+b) Eine Fabrik übernimmt den Rest.
+

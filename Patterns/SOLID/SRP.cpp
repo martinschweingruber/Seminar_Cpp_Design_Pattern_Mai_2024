@@ -60,6 +60,8 @@ namespace ConceptualExampleSRP
         auto get_entries() const { return m_entries; }
     };
 
+
+
     struct SavingManager
     {
         static void save(const Journal& journal, const std::string& filename, std::ostream& os) {
@@ -88,6 +90,7 @@ static void test_conceptual_example_srp()
     Journal journal{ "John" };
     journal.addEntry("In the morning I went to school");
     journal.addEntry("In the afternoon I did my homework");
+
     SavingManager::save(journal, "diary.txt", std::cout);
 }
 

@@ -18,6 +18,8 @@ namespace ConceptualExample02 {
         virtual ~ProductBase() {}
 
         virtual std::string operation() const = 0;
+
+        virtual double getProductPrice() const = 0;
     };
 
     /**
@@ -30,6 +32,11 @@ namespace ConceptualExample02 {
         {
             return std::string{ "\"Result of the ConcreteProduct1\"" };
         }
+
+        double getProductPrice() const override
+        {
+            return 999.0;
+        }
     };
 
     class ConcreteProduct2 : public ProductBase 
@@ -37,6 +44,11 @@ namespace ConceptualExample02 {
     public:
         std::string operation() const override {
             return std::string{ "\"Result of the ConcreteProduct2\"" };
+        }
+
+        double getProductPrice() const override
+        {
+            return 1999.0;
         }
     };
 
@@ -50,6 +62,8 @@ namespace ConceptualExample02 {
         virtual ~FactoryBase() {};
 
         virtual std::shared_ptr<ProductBase> factoryMethod() const = 0;
+
+        virtual double getPrice() const = 0;
 
         /**
          * Note:
@@ -67,7 +81,12 @@ namespace ConceptualExample02 {
             // now, *use* the product:
             std::string tmp{ product->operation() };
 
-            std::string result{ "FactoryBase: This factory's code has just created a " + tmp };
+            double totalCosts = product->getProductPrice() + this->getPrice();
+
+            std::string result{ 
+                "FactoryBase: This factory's code has just created a "
+                + tmp + "." + " Costs: " + std::to_string(totalCosts)
+            };
 
             return result;
         }
@@ -93,6 +112,11 @@ namespace ConceptualExample02 {
 
             return product;
         }
+
+        double getPrice() const override
+        {
+            return 499.0;
+        }
     };
 
     class ConcreteFactory2 : public FactoryBase 
@@ -105,6 +129,11 @@ namespace ConceptualExample02 {
             };
 
             return product;
+        }
+
+        double getPrice() const override
+        {
+            return 899.0;
         }
     };
 
