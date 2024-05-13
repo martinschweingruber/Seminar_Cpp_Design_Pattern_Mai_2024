@@ -1,0 +1,40 @@
+Seminar Design Pattern C++
+
+Guten Morgen
+
+Peter Loos
+
+=========================================
+
+10:30
+
+12 .. 12.15 ==> 1 Stunde
+
+ca. 15 Uhr
+
+Bis 17 Uhr
+
+
+=========================================
+
+
+
+
+
+C++
+
+Was sind deine Erwartungen / Wünsche / Fragen ....
+
+Architektur-Fragen:
+
+== Wie baue ich ein Programm auf ....
+
+=========================================
+
+Wie ziehe ich dieses Seminar durch (Tooling)
+
+== GitHub:   https://github.com/pelocpp
+
+=========================================
+
+
