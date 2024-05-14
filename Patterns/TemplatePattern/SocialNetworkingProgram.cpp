@@ -34,6 +34,7 @@ void test_social_networking()
 
     // create proper network object
     std::unique_ptr<SocialNetwork> socialNetwork{};
+
     if (choice == 1) {
         socialNetwork = std::make_unique<Facebook>(userName, password);
     }

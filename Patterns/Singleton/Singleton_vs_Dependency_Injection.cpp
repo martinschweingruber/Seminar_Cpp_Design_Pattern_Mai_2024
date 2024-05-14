@@ -104,7 +104,8 @@ namespace DependencyInjectionLogger {
     class CustomerRepository
     {
     public:
-        CustomerRepository() = delete;
+      //   CustomerRepository() = default;
+        CustomerRepository() : m_logger{} {}
 
         explicit CustomerRepository(const std::shared_ptr<LoggingFacility>& logger)
             : m_logger{ logger }
@@ -123,9 +124,11 @@ namespace DependencyInjectionLogger {
 
     static void test_di_logger()
     {
-        std::shared_ptr<LoggingFacility> logger = std::make_shared<StandardOutputLogger>();
+        std::shared_ptr<LoggingFacility> logger 
+            = std::make_shared<StandardOutputLogger>();
 
         CustomerRepository customerRepository{ logger };
+       // CustomerRepository customerRepository{};
 
         Identifier id{};
 

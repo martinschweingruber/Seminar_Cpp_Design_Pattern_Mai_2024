@@ -39,6 +39,7 @@ namespace ObserverDesignPatternSmartPointer {
     class Subject : public ISubject {
     private:
         std::list<std::weak_ptr<IObserver>> m_list_observers;
+
         std::string m_message;
 
     public:
@@ -55,9 +56,12 @@ namespace ObserverDesignPatternSmartPointer {
 
         void detach(std::weak_ptr<IObserver> observer) override {
 
+
+            // m_list_observers.remove(observer);
+
             // https://stackoverflow.com/questions/10120623/removing-item-from-list-of-weak-ptrs
 
-            m_list_observers.remove_if([&](std::weak_ptr<IObserver> wp) {
+            m_list_observers.remove_if([&](std::weak_ptr<IObserver> wp) -> bool {
                 return !observer.owner_before(wp) && !wp.owner_before(observer);
                 }
             );
@@ -66,6 +70,8 @@ namespace ObserverDesignPatternSmartPointer {
         void createMessage(std::string message = "<empty>") {
             m_message = message;
             notify();
+
+            // detach(std::weak_ptr<IObserver>(this));
         }
 
         void howManyObservers() {

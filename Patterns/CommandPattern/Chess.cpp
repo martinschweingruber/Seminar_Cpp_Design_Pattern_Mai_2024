@@ -83,7 +83,7 @@ namespace ChessExample {
         }
     };
 
-    class Move
+    class Move   // CommandBase
     {
     private:
         std::shared_ptr<ChessPiece> m_piece;
@@ -100,14 +100,16 @@ namespace ChessExample {
         virtual void undoMove() = 0;
     };
 
-    class SimpleMove : public Move
+    class SimpleMove : public Move   // ConcreteCommand
     {
     private:
         Position m_newPosition;
         Position m_oldPosition;
 
     public:
-        SimpleMove(std::shared_ptr<ChessPiece> piece, Position position) : Move(piece), m_newPosition(position) {}
+        SimpleMove(std::shared_ptr<ChessPiece> piece, Position position)
+            : Move(piece), m_newPosition(position) 
+        {}
 
         virtual void doMove() override
         {
@@ -217,7 +219,8 @@ namespace ChessExample {
     {
         ChessGame game;
 
-        std::shared_ptr<ChessPiece> tower = std::make_shared<Tower>(false, Position(1, 1));
+        std::shared_ptr<ChessPiece> tower = 
+            std::make_shared<Tower>(false, Position(1, 1));
 
         game.play(tower, Position(4, 1));
         game.play(tower, Position(6, 1));

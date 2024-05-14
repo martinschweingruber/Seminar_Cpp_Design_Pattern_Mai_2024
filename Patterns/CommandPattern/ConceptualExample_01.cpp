@@ -38,7 +38,7 @@ namespace ConceptualExample01 {
             : m_receiver{ receiver }
         {}
 
-        virtual void execute() const = 0;
+        virtual void execute() const = 0;  // abstract
     };
 
     /**
@@ -90,8 +90,6 @@ void test_conceptual_example_01() {
 
     using namespace ConceptualExample01;
 
-    Invoker invoker{};
-
     std::shared_ptr<Receiver> receiver {
         std::make_shared<Receiver>()
     };
@@ -102,8 +100,9 @@ void test_conceptual_example_01() {
 
     command->setData("Hello, world!");
 
-    invoker.setCommand(command);
+    Invoker invoker{};
 
+    invoker.setCommand(command);
     invoker.executeCommand();
 }
 

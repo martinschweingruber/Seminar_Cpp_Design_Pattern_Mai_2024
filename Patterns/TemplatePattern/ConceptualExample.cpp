@@ -56,6 +56,7 @@ protected:
      * These operations have to be implemented in subclasses.
      */
     virtual void RequiredOperations1() const = 0;
+
     virtual void RequiredOperation2() const = 0;
 
     /**
@@ -65,6 +66,7 @@ protected:
      * algorithm.
      */
     virtual void Hook1() const {}
+
     virtual void Hook2() const {}
 };
 

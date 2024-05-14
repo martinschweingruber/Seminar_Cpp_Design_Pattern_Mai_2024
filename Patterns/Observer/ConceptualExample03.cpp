@@ -94,6 +94,8 @@ namespace ObserverDesignPatternSmartPointerEx {
 
     // ===========================================================================
 
+    // CRTP
+
     class Observer : public IObserver, public std::enable_shared_from_this<Observer> {
     private:
         std::shared_ptr<Subject> m_subject;
@@ -101,11 +103,20 @@ namespace ObserverDesignPatternSmartPointerEx {
         static int m_static_number;
         int m_number;
 
+        std::shared_ptr<Observer> m_me;
+
     public:
         Observer() : m_subject{ nullptr }
         {
             std::cout << "Hi, I'm the Observer \"" << ++Observer::m_static_number << "\".\n";
             m_number = Observer::m_static_number;
+
+           // m_me = shared_from_this();
+        }
+
+        void storeThis()
+        {
+            m_me = shared_from_this();
         }
 
         Observer(std::shared_ptr<Subject> subject) : m_subject{ subject } 
@@ -129,8 +140,10 @@ namespace ObserverDesignPatternSmartPointerEx {
         {
             if (m_subject != nullptr) {
                 try {
-                    std::shared_ptr<Observer> me{ shared_from_this() };
+                    std::shared_ptr<Observer> me { shared_from_this() };
+                    
                     m_subject->detach(me);
+                    
                     std::cout
                         << "Observer \"" << m_number
                         << "\" removed from the list.\n";
@@ -155,7 +168,10 @@ namespace ObserverDesignPatternSmartPointerEx {
 
         std::shared_ptr<Subject> subject{ std::make_shared<Subject>() };
 
-        std::shared_ptr<IObserver> observer1{ std::make_shared<Observer>() };
+        std::shared_ptr<Observer> observer1{ std::make_shared<Observer>() };
+
+        observer1->storeThis();
+
         std::shared_ptr<IObserver> observer2{ std::make_shared<Observer>() };
         std::shared_ptr<IObserver> observer3{ std::make_shared<Observer>() };
 

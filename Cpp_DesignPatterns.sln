@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{60AD0A9A-5241-4A56-9619-C260AE166D44}"
 	ProjectSection(SolutionItems) = preProject
 		Agenda_Design_Pattern.pdf = Agenda_Design_Pattern.pdf
+		Clipbpoard.cpp = Clipbpoard.cpp
 		Resources\DesignPattern_HeardAbout.png = Resources\DesignPattern_HeardAbout.png
 		Resources\dp_overview.png = Resources\dp_overview.png
 		Resources\dp_overview.svg = Resources\dp_overview.svg

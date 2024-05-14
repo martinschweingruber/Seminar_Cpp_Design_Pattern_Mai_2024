@@ -23,6 +23,7 @@ namespace ConceptualExample01 {
         Singleton& operator=(Singleton&&) noexcept = delete;
 
     public:
+        // single-threading context
         static Singleton* getInstance()
         {
             if (m_instance == nullptr) {
@@ -32,14 +33,18 @@ namespace ConceptualExample01 {
             return m_instance;
         }
 
+        // multi-threading context
         static Singleton* getInstanceThreadSafe()
         {
             {
-                std::scoped_lock<std::mutex> lock{ m_mutex };
+                // RAII
+                // kostet Zeit
+                std::lock_guard<std::mutex> guard { m_mutex };   // guard.lock();
+
                 if (m_instance == nullptr) {
                     m_instance = new Singleton{};
                 }
-            }
+            }   //  guard.unlock();
 
             return m_instance;
         }
@@ -65,7 +70,7 @@ namespace ConceptualExample01 {
     };
 
     Singleton* Singleton::m_instance{ nullptr };
-    std::mutex Singleton::m_mutex;
+    std::mutex Singleton::m_mutex{};
 }
 
 void test_singleton_01()

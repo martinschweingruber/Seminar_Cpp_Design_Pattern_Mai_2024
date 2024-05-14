@@ -274,3 +274,259 @@ a) Ich kenne Grundprinzipien eines Loggers
    
 b) Eine Fabrik übernimmt den Rest.
 
+// ====================================================
+
+Template Method:
+
+Tetris - Game
+
+==> 8 Figuren
+
+==> Move  ===> Schablone:  
+
+8 mal Move realisieren .....
+
+Hmmmm. die werden recht ähnlich sein :)
+
+We can do better : Wie?  Template Method Pattern.
+
+// ====================================================
+
+Singleton:
+
+Pattern (GoF) ======> Anti-Pattern
+
+a) Vorstellung
+
+b) Idee (Clean C++ 20 // St. Roth)
+
+// ====================================================
+
+RAII
+
+Resource Acquisition is Initialization
+
+File:   open  close
+
+
+Socket:  open close
+
+SqlConnection:   connect,  disconnect
+
+Win32:  CreateMutex (HANDLE - ulong)   // ReleaseHandle
+
+JEDE Resource belegt Speicher im OS // Prozess
+
+Dieser ist freizugeben
+
+Prozess: Programm beenden.    hier wir aller belegter Speicher autom. freigegen.
+
+Trick / Idiom:
+
+a) klassisch;  manuell // zum geg. Zeitpunkt den "close" aufrufen
+
+b) RAII: OO: Objekte // Konstruktoren / Destruktoren
+
+   ===> deterministisch : Konstruktor: klar
+
+    Destruktor:    globale, lokale, dynamisch (new)
+
+    lokal: AM ENDE des SCOPES   {  }
+
+c) Idee: Man verwende eine Resource nicht DIREKT:
+
+   std::mutex guard;
+
+   guard.lock();
+   ...
+   guard.unlock();    // der MUSS KOMMEN
+
+   -------------------
+
+   Hüllenobjekte:  Wrapper
+
+   std::lock_guard
+
+   Beispiel:
+
+   {
+      std::lock_guard<std::mutex> wrapper(guard);     // Konstruktor: guard.lock();
+      ... kritischen Tätigkeiten / Tätigkeiten in Bezug auf die Resource
+
+   }  // Destruktor guard.unlock();  
+
+
+   // Beispiel zu Clip Board:
+
+   https://github.com/pelocpp/cpp_case_studies/tree/master/CaseStudies/CodeConverter
+
+Go - for - RAII
+
+Bemerkung:
+
+Ist RAII in der C++ Standard Bibliothek enthalten ???
+
+Teilweise :)
+
+std::lock_guard
+
+======================================================
+
+Command Pattern:
+
+== Schichten
+
+== Ereignisse:   Warteschlange // Kennungen der Events // Daten des Events
+
+== Behandlung:
+
+   zu einem späteren Zeitpunkt: Event-Handler ausführen
+
+Low-Level:
+
+C++:  High-level: 
+
+Die Informationen eines Aufrufs einer Methode "zwischenspeichern"
+und den tatsächlichen Aufruf zu einem späteren Zeitpunkt ausführen.
+
+
+======================================================
+
+Queue mit std::Functions ...........
+
+Tipp:
+
+Realisierung einer Ereigniswarteschlange (Event Loop )
+
+Literatur-Hinweis:
+
+https://github.com/pelocpp/cpp_concurrency/blob/master/Programs/27_EventLoop/Readme.md
+
+======================================================
+
+Observer-Pattern:
+
+
+Observer-Obserable Pattern:
+
+== Objekte, die Zustand haben ... und diesen ändern:
+
+
+   „Subject” oder auch „Publisher” oder auch "Event Source"
+
+   Stellvertreter:  Aktienkurse ==>  RESTful Service // Web Service // HttpRequest ....
+
+   class Shares 
+
+== Anderen Objekte, die sich dafür interessieren:
+
+   == „Subscriber” oder auch „Observer” oder auch "Event Client"
+
+   == Visualisierung: Diese will AKTUELLE Kurse anzeigen.
+
+   === Polling: ineffizient
+   === Aussenden eines Ereignisses: Ein Kurs hat sich geändert.
+
+   Anmerkung: C# kennt das Sprachmittel 'event' // 'delegate'.
+
+   == Clients: Sich für einen bestimmten AKtienkurs interessieren.
+
+------------------------------------------------------------------
+
+1. Variante: mit Shared-Pointer.
+
+
+Warum ist der std::weak_ptr wichtig :)
+
+Beispiel:
+
+Der Observer kennt das Subject
+
+Das Subject kennt seine Observer
+
+A) WAS IST DAS PROBLEM ???????????????????????
+
+
+Siehe die Bilder hier:
+
+https://github.com/pelocpp/cpp_modern/blob/master/GeneralSnippets/WeakPtr/WeakPtr.md
+
+
+
+B) WIE LÖSE ICH ES ???????????????????????????
+
+Mindset:  
+
+a) ===> Go for std::shared_ptr,
+
+        WENN es sich um ein Objekt handelt, dass das Objekt Teil meiner DATEN (Bauteil) ist.
+
+        Möglich: Ein Bauteil wird nicht mehr benötigt ===> std::shared_ptr verschwunden.
+
+b) Ich brauche ein (dynamisches // new // std::shared_ptr) Objekt meiner DATEN an einer anderen Stelle:
+
+   "andere Stelle": Die NICHT für sich in ANSPRUCH nehmen kann, ein BESITZER (OWNER) des Objekts zu werden !!!
+
+   ===> Go for std::weak_ptr
+
+   i) Visualisierung:  Liste aller Bauteile: 
+
+      Hier genüht ein temporärer Besitz !!!!!!!!!!!!!!  std::weak_ptr
+
+      std::weak_ptr HAT KEINEN ZUGRIFF AUF DEN ZEIGER
+
+      =========> lock !!!  ===> std::shared_ptr
+
+      Möglich: std::shared_ptr des Bauteils gar nicht mehr vorhanden:
+
+      =========> lock !!!  ===> kann auch nullptr zurückliefern.
+
+
+ Ein kleiner Wehrmutstropfen:
+
+ Entfernen von weak-Pointers aus Container ist nicht-trivial,
+ weil weak_ptr den == Operator nicht kennen.
+
+ Lösung:
+
+         void detach(std::weak_ptr<IObserver> observer) override {
+
+            // m_list_observers.remove(observer);
+
+            // https://stackoverflow.com/questions/10120623/removing-item-from-list-of-weak-ptrs
+
+            m_list_observers.remove_if([&](std::weak_ptr<IObserver> wp) {
+                return !observer.owner_before(wp) && !wp.owner_before(observer);
+                }
+            );
+        }
+
+================================================================
+
+Zweites Detail:
+
+Wie komme ich analog zu this zu std::shared_ptr<>(this) ???
+
+A) Mit
+
+    class Observer : ...,  public std::enable_shared_from_this<Observer> {
+    private:
+
+
+
+B)
+
+        void removeMeFromTheList() 
+        {
+            if (m_subject != nullptr) {
+
+                    std::shared_ptr<Observer> me { shared_from_this() };
+                    
+                    m_subject->detach(me);
+                  
+---------------------------------------------------------------------
+
+VORSICHT !!!!!!!!!!!!!!!!!!!!!!!!!
+
+Das alles geht NICHT IN EINEM Konstruktor !!!!!!!!
+

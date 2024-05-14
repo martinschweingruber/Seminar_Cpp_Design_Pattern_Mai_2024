@@ -45,7 +45,16 @@ namespace ObserverDesignPatternClassic {
     class Subject : public ISubject {
     private:
         std::list<IObserver*> m_list_observers;
-        std::string m_message;
+
+        std::string m_message;  // State
+
+        // HTTP - Request req;
+
+        // HW: Polling auf eine Firmware // Port // Low-Level Daten
+
+        // so oft wie nötig, aber nicht öfters ...
+
+        // NUR WENN via Polling NEUE Daten da sind, dann darf notifiziert werden !
 
     public:
         virtual ~Subject() {
@@ -65,6 +74,7 @@ namespace ObserverDesignPatternClassic {
 
         void createMessage(std::string message = "<empty>") {
             m_message = message;
+            // Fehlt: Nur wenn message sich gändert hat, sollte notifiziert werden !!!
             notify();
         }
 
@@ -85,8 +95,10 @@ namespace ObserverDesignPatternClassic {
         }
 
     private:
-        void notify() {
+        void notify() 
+        {
             howManyObservers();
+
             for (const auto& observer : m_list_observers) {
                 observer->update(m_message);
             }
@@ -103,17 +115,20 @@ namespace ObserverDesignPatternClassic {
         static int  m_static_number;
 
     public:
-        Observer() {
-            m_subject = nullptr;
-            std::cout << "Hi, I'm the Observer \"" << ++Observer::m_static_number << "\".\n";
-            m_number = Observer::m_static_number;
-        }
+        // Wozu Default C'tor: KEIN SUBJECT
+        //Observer() {
+        //    m_subject = nullptr;
+        //    std::cout << "Hi, I'm the Observer \"" << ++Observer::m_static_number << "\".\n";
+        //    m_number = Observer::m_static_number;
+        //}
 
         // Information of 'subject' needed
         // to demonstrate 'removeMeFromTheList' method
 
-        Observer(Subject* subject) : m_subject{ subject } {
-            m_subject->attach(this);
+        Observer(Subject* subject) //: m_subject{ subject } 
+        {
+            m_subject = subject;
+         //   m_subject->attach(this);
             std::cout << "Hi, I'm the Observer \"" << ++Observer::m_static_number << "\".\n";
             m_number = Observer::m_static_number;
         }
@@ -125,6 +140,9 @@ namespace ObserverDesignPatternClassic {
 
         void update(const std::string& messageFromSubject) override
         {
+            // dauert das lange:   ==> Thread
+
+
             m_messageFromSubject = messageFromSubject;
             printInfo();
         }
@@ -132,7 +150,10 @@ namespace ObserverDesignPatternClassic {
         void removeMeFromTheList() 
         {
             if (m_subject != nullptr) {
+
+                // Annahme: Ich bin ein shared_ptr :)
                 m_subject->detach(this);
+
                 std::cout
                     << "Observer \"" << m_number
                     << "\" removed from the list.\n";
@@ -154,9 +175,9 @@ namespace ObserverDesignPatternClassic {
     {
         Subject* subject{ new Subject };
 
-        Observer* observer1{ new Observer{} };
-        Observer* observer2{ new Observer{} };
-        Observer* observer3{ new Observer{} };
+        Observer* observer1{ new Observer{subject} };
+        Observer* observer2{ new Observer{subject} };
+        Observer* observer3{ new Observer{subject} };
 
         subject->attach(observer1);
         subject->attach(observer2);
@@ -199,7 +220,7 @@ namespace ObserverDesignPatternClassic {
 
 void test_conceptual_example_01() {
     ObserverDesignPatternClassic::clientCode_01();
-    ObserverDesignPatternClassic::clientCode_02();
+   // ObserverDesignPatternClassic::clientCode_02();
 }
 
 // ===========================================================================
