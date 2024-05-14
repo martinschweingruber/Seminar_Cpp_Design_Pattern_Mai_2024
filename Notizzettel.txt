@@ -4,6 +4,13 @@ Guten Morgen
 
 Peter Loos
 
+peter.loos@gmx.de
+
+https://github.com/pelocpp
+
+https://peterloos.de/
+
+
 =========================================
 
 10:30
@@ -16,10 +23,6 @@ Bis 17 Uhr
 
 
 =========================================
-
-
-
-
 
 C++
 
@@ -530,3 +533,153 @@ VORSICHT !!!!!!!!!!!!!!!!!!!!!!!!!
 
 Das alles geht NICHT IN EINEM Konstruktor !!!!!!!!
 
+=========================================================================
+
+Strategy - Pattern
+
+A) Original:  Hochgradig dynamisch ===>     std::unique_ptr<StrategyBase> m_strategy; 
+
+              Laufzeit
+
+B) Variation:  C++
+
+   ==> Generische Programmierung ==> Templates 
+
+   ==> Übersetzungszeit
+
+Möglichkeit: Strategy - Pattern auf Basis Templates zu verwenden.
+
+
+Beispiel:
+
+
+        m_list_strategy->start(m_oss);    // indirect call
+00007FF6DF7C8C04  mov         rax,qword ptr [this]  
+00007FF6DF7C8C0B  mov         rcx,rax  
+00007FF6DF7C8C0E  call        std::unique_ptr<IListStrategy,std::default_delete<IListStrategy> >::operator-> (07FF6DF7AC027h)  
+00007FF6DF7C8C13  mov         qword ptr [rbp+138h],rax  
+00007FF6DF7C8C1A  mov         rax,qword ptr [this]  
+00007FF6DF7C8C21  add         rax,8  
+00007FF6DF7C8C25  mov         rcx,qword ptr [rbp+138h]  
+00007FF6DF7C8C2C  mov         rcx,qword ptr [rcx]  
+00007FF6DF7C8C2F  mov         qword ptr [rbp+140h],rcx  
+00007FF6DF7C8C36  mov         rdx,rax  
+00007FF6DF7C8C39  mov         rcx,qword ptr [rbp+138h]  
+00007FF6DF7C8C40  mov         rax,qword ptr [rbp+140h]  
+00007FF6DF7C8C47  call        qword ptr [rax+8]  
+
+        m_list_strategy.start(m_oss);
+00007FF6DF7C8B04  mov         rax,qword ptr [this]  
+00007FF6DF7C8B0B  add         rax,8  
+00007FF6DF7C8B0F  mov         rcx,qword ptr [this]  
+00007FF6DF7C8B16  mov         rdx,rax  
+00007FF6DF7C8B19  call        MarkdownListStrategyEx::start (07FF6DF7AB825h)  
+
+Call-to-Action:
+
+Nicht immer ist Vererbung // virtuelle Methodenaufrufmechanismus
+
+die performanteste Lösung.
+
+Mit Templates // generischer Programmierung lässt sich die Performanz steigern !!!
+
+Performanz:
+
+======================================================================
+
+Type Erasure:    Typ löschen // ignorieren ...
+
+Technik:
+
+std::function
+
+==> Lambda
+==> Callable Objekts (  operator () )
+==> C-Funktionen
+==> Methoden
+
+std::any
+
+
+"Um einen generischen Container zu erstellen,
+der eine Vielzahl unterschiedlicher, konkreter Typen aufnehmen kann.”
+
+std::vector<std::variant<int, long, double>>
+
+
+
+======================================================================
+
+Facade:
+
+"Da schreiben wir mal eine Schicht / Layer / Hülle".
+
+
+======================================================================
+
+Proxy:
+
+Objekte über Prozess-Grenzen hinweg:
+
+== CORBA  // Unix
+
+== DCOM   // Windows
+
+Common Object Request Broker Architecture (CORBA):
+
+== 2 Prozesse: 
+
+class Rectangle {
+    draw(Color);
+}
+
+A) Prozess A: Rectangle* rect;
+
+B) Prozess B: Rectangle* rectProxy;  // <=== Verbindung mit Rectangle rect aus A).
+
+   rectProxy -> draw(Color.Red);   // Un/Marshalling von Parametern
+                                   // IPC 
+
+======================================================================
+
+Leichtgewichtiger:
+
+WebService // HttpRequest  // JSON
+
+======================================================================
+
+Software-Architektur
+
+C++
+
+== Klassen, Objekte
+
+== Master-Objekt // Anti-Pattern
+
+== Main-Loop
+
+== Namesraum // namespace
+
+== // Modul  // Bibliothek
+
+// Embedded
+
+======================================================================
+
+Tooling: DI Container
+
+
+https://github.com/pelocpp/cpp_design_patterns_di
+
+https://github.com/ybainier/Hypodermic
+
+======================================================================
+
+Hausaufgabe:
+
+https://github.com/pelocpp/cpp_design_patterns/blob/master/Patterns/PolicyBasedDesign/Resources/Readme.md
+
+Policy-Based Design
+
+
+======================================================================

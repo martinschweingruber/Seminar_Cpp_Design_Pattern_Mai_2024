@@ -15,6 +15,7 @@ namespace ConceptualExample01 {
         virtual void execute(const std::string& request) = 0;
     };
 
+    // Trace
     class DebugFilter : public IFilter
     {
     public:
@@ -35,6 +36,9 @@ namespace ConceptualExample01 {
     {
     public:
         void operation(const std::string& request) {
+
+            // std::cout << "[TRACE] Uhrzeit: " << std::endl;
+
             std::cout << "Executing Request: " << request << std::endl;
         }
     };
@@ -43,7 +47,8 @@ namespace ConceptualExample01 {
     {
     private:
         std::list<std::weak_ptr<IFilter>> m_filters;
-        std::shared_ptr<Target> m_target;
+
+        std::shared_ptr<Target> m_target;   // weak_ptr ???????????????????????
 
     public:
         FilterChain()
@@ -73,10 +78,14 @@ namespace ConceptualExample01 {
 
         void executeRequest(std::string request)
         {
-            for (const std::weak_ptr<IFilter>& filter : m_filters) {
+            for (const std::weak_ptr<IFilter>& filter : m_filters) 
+            {
                 std::shared_ptr<IFilter> tmp{ filter.lock() };
                 if (tmp != nullptr) {
-                    tmp->execute(request);
+                    /* bool result = */ tmp->execute(request);
+                    //if (!result) {
+                    //    return;
+                    //}
                 }
             }
 
@@ -128,11 +137,13 @@ void test_conceptual_example_01()
     using namespace ConceptualExample01;
 
     std::shared_ptr<Target> target = std::make_shared<Target>();
+
     std::shared_ptr<FilterChain> chain = std::make_shared<FilterChain>();
     chain->setTarget(target);
 
     std::shared_ptr<IFilter> filter1 = std::make_shared<DebugFilter>();
     chain->addFilter(filter1);
+
     std::shared_ptr<IFilter> filter2 = std::make_shared<AuthenticationFilter>();
     chain->addFilter(filter2);
 

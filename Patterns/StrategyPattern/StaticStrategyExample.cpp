@@ -53,6 +53,7 @@ class TextProcessor
 {
 private:
     std::unique_ptr<IListStrategy> m_list_strategy;
+
     std::ostringstream m_oss;
 
 public:
@@ -63,10 +64,12 @@ public:
 
     void append_list(std::initializer_list<std::string> items) {
 
-        m_list_strategy->start(m_oss);
+        m_list_strategy->start(m_oss);    // indirect call
+
         for (const auto& item : items) {
             m_list_strategy->add_list_item(m_oss, item);
         }
+
         m_list_strategy->end(m_oss);
     }
 
@@ -90,7 +93,7 @@ void test_dynamic_strategy_example ()
 {
     // markdown
     TextProcessor tp;
-    tp.set_output_format(Format::Markdown);
+    tp.set_output_format(Format::Markdown);    // Laufzeit 
     tp.append_list({ "foo", "bar", "baz" });
     std::cout << tp.str() << std::endl;
 
@@ -108,17 +111,19 @@ template<typename TListStrategy>
 class TextProcessorEx
 {
 private:
-    TListStrategy m_list_strategy;
+    TListStrategy m_list_strategy;   // value
     std::ostringstream m_oss;
 
 public:
     void append_list(std::initializer_list<std::string> items) 
     {
         m_list_strategy.start(m_oss);
+
         for (auto& item : items) {
             m_list_strategy.add_list_item(m_oss, item);
         }
-        m_list_strategy.end(m_oss);
+
+        m_list_strategy.end(m_oss);  // .   DIRECT CALL // direkter Aufruf
     }
 
     std::string str() const { return m_oss.str(); }
@@ -153,7 +158,7 @@ struct HtmlListStrategyEx
 void test_static_strategy_example ()
 {
     // markdown
-    TextProcessorEx<MarkdownListStrategyEx> tp1;
+    TextProcessorEx<MarkdownListStrategyEx> tp1;   // Übersetzungszeit
     tp1.append_list({ "foo", "bar", "baz" });
     std::cout << tp1.str() << std::endl;
 

@@ -16,9 +16,11 @@
 void test_ecommerce_app()
 {
     Order order;
+
     std::shared_ptr<PaymentStrategy> strategy = nullptr;
 
     std::map<int, int> priceOnProducts;
+
     priceOnProducts[1] = 2000;
     priceOnProducts[2] = 950;
     priceOnProducts[3] = 1200;

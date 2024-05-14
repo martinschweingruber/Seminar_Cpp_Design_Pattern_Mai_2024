@@ -173,6 +173,7 @@ namespace PolicyBasedDesign_11 {
     class LogToFile {
     protected:
         static void write(const std::string& message) {
+            // RAII
             std::ofstream myFile;
             myFile.open("policyInheritance.txt");
             myFile << message << '\n';

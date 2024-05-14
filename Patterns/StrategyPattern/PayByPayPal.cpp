@@ -64,7 +64,6 @@ bool PayByPayPal::pay(int paymentAmount)
  */
 bool PayByPayPal::verify()
 {
-
     m_isSignedIn = (m_email == m_paypalDataBase[m_password]);
     return m_isSignedIn;
 }
